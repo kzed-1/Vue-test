@@ -10,47 +10,86 @@ new Vue({
         playerStyle: {
             backgroundColor: 'lightBlue'
         },
-        gameRunning: false
+        gameRunning: false,
+        specialAttackUsed: false,
+        turn: 0
     },
     methods: {
+        calculateDamage: function (min, max) {
+            return Math.max(Math.floor(max * Math.random()), min)
+        },
         attackByMonster: function () {
-            let monsterAttack = Math.floor(10 * Math.random())
+            let monsterAttack = this.calculateDamage(5, 15)
             this.log.push(`Monster delt ${monsterAttack} damage`);
             return monsterAttack;
         },
-        attackByPlayer: function (type) {
-            let playerAttack = Math.floor(10 * Math.random())
-            if (type === 'special') {
+        attackByPlayer: function (factor) {
+            let playerAttack = this.calculateDamage(3, 10) 
+            if (factor != null) {
                 this.log.push(`Player delt special attack ${playerAttack} damage`);
-                return 20
+                return playerAttack * factor
             } else {
                 this.log.push(`Player delt ${playerAttack} damage`);
                 return playerAttack;
             }
         },
         attackButton: function () {
-            if (this.playerHealth <= 0 ) {
+            const monsterDamage = this.attackByMonster()
+            const playerDamage = this.attackByPlayer()
+
+            if (this.playerHealth - monsterDamage <= 0 ) {
+                this.playerHealth -= monsterDamage;
                 this.playerHealth = 0;
                 return
             } else {
-                this.playerHealth -= this.attackByMonster();
+                this.playerHealth -= monsterDamage;
             }
             
-            if (this.monsterHealth <= 0) {
+            if (this.monsterHealth - playerDamage <= 0) {
+                this.monsterHealth -= playerDamage
                 this.monsterHealth = 0;
                 return
             } else {
-                this.monsterHealth -= this.attackByPlayer();
+                this.monsterHealth -= playerDamage;
             }
+            this.turn -= 1
         },
-        specialAttack: function () {
-            this.monsterHealth -= this.attackByPlayer('special');
-            this.playerHealth -= this.attackByMonster();
+        specialAttack: function (used, factor=2) {
+            if (used) {
+                alert(`You already used the special attack, wait ${this.turn} ${this.turn === 1 ? 'turn' : 'turns'}`);
+                return 
+            }
+
+            const playerDamage = this.attackByPlayer(factor);
+            const monsterDamage = this.attackByMonster();
+
+            if (this.monsterHealth - playerDamage <= 0) {
+                this.monsterHealth -= playerDamage;
+                this.monsterHealth = 0;
+                return;
+            }
+
+            this.monsterHealth -= playerDamage;
+            this.playerHealth -= monsterDamage;
+            this.turn = 3;
+            this.specialAttackUsed = true
         },
-        heal: function () {
-            this.playerHealth += 10;
-            this.log.push('Player healed 10HP')
-            this.playerHealth -= this.attackByMonster();
+        heal: function (num = 10) {
+            const monsterDamage = this.attackByMonster();
+
+            if (this.playerHealth === 100) {
+                return;
+            } else if (this.playerHealth + num > 100) {
+                this.playerHealth = 100;
+                this.playerHealth -= monsterDamage;
+                this.turn -= 1;
+                return;
+            }
+
+            this.playerHealth += num;
+            this.log.push(`Player healed ${num}HP`)
+            this.playerHealth -= monsterDamage;
+            this.turn -= 1;
         },
         startGame: function () {
             this.playerHealth = 100;
@@ -62,31 +101,35 @@ new Vue({
             const response = confirm('Are you sure you want to give up?');
             if (response === true) {
                 this.startGame();
+                this.gameRunning = false;
             }
+        },
+        gameOver: function(result, entity) {
+            entity = 0
+            this.gameRunning = false
+
+            const response = confirm(`You ${result} Play again?`);
+            if (response === true) {
+                this.startGame();
+            } 
+            return;
         }
     },
     watch: {
         monsterHealth: function () {
             if (this.monsterHealth <= 0) {
-                this.monsterHealth = 0
-                this.gameRunning = false
-
-                const response = confirm('You won! Play again?');
-                if (response === true) {
-                    this.startGame();
-                }
-                return;
+                this.gameOver('Win!', this.monsterHealth)
             }
+    
         },
         playerHealth: function () {
             if (this.playerHealth <= 0) {
-                this.playerHealth = 0
-                this.gameRunning = false
-                const response = confirm('You lost! Play again?');
-                if (response === true) {
-                    this.startGame();
-                }
-                return;
+                this.gameOver('Lose!', this.playerHealth)
+            }
+        }, 
+        turn: function() {
+            if (this.turn <= 0) {
+                this.specialAttackUsed = false;
             }
         }
     }

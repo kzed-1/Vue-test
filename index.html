@@ -38,8 +38,8 @@
     <section v-else class="row controls">
         <div class="small-12 columns">
             <button id="attack" v-on:click="attackButton" >ATTACK</button>
-            <button id="special-attack" v-on:click="specialAttack">SPECIAL ATTACK</button>
-            <button id="heal" v-on:click="heal">HEAL</button>
+            <button id="special-attack" v-on:click="specialAttack(specialAttackUsed)">SPECIAL ATTACK</button>
+            <button id="heal" v-on:click="heal()">HEAL</button>
             <button id="give-up" v-on:click="giveUp">GIVE UP</button>
         </div>
     </section>
