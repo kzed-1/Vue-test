@@ -47,8 +47,7 @@
         <div class="small-12 columns" v-bind:style="{overflow: 'scroll', maxHeight: '500px'}">
             <ul>
                 <li v-for="activity in log">
-                    <div v-if="activity.includes('Player')" :style="playerStyle">{{activity}}</div>
-                    <div v-else :style="monStyle">{{activity}}</div>
+                    <div :class="{'player-turn': activity.isPlayer, 'monster-turn': !activity.isPlayer}" >{{activity.text}}</div>
                 </li>
             </ul>
         </div>

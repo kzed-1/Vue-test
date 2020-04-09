@@ -13,7 +13,7 @@ new Vue({
         gameRunning: false,
         specialAttackUsed: false,
         wait: 0,
-        turns: 0
+        turns: 0,
     },
     methods: {
         calculateDamage: function (min, max) {
@@ -37,7 +37,10 @@ new Vue({
             }
         },
         addToLog: function (whom, hp, action) {
-            this.log.unshift(`${whom} ${action} ${hp} HP`);
+            this.log.unshift({
+                isPlayer: (whom === 'Player' ? true : false),
+                text: `${whom} ${action} ${hp} HP`
+            });
         },
         attackButton: function () {
             const damage = this.playerDamage()
@@ -85,7 +88,10 @@ new Vue({
                 this.playerHealth = 100;
             }
             
-            this.log.unshift(`Player healed ${num}HP`)
+            this.log.unshift({
+                isPlayer: true,
+                text: `Player healed ${num}HP`
+            })
             this.wait -= 1;
             this.monsterAttack();
         },
