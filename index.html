@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Monster Slayer</title>
+    <script src="./vue.js"></script>
+    <link rel="stylesheet" href="css/foundation.min.css">
+    <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app">
+    <section class="row">
+        <div class="small-6 columns">
+            <h1 class="text-center">YOU</h1>
+            <div class="healthbar">
+                <div class="healthbar text-center" 
+                    style="background-color: green; margin: 0; color: white;"
+                    v-bind:style="{width: playerHealth + '%'}">
+                    {{ playerHealth }}
+                </div>
+            </div>
+        </div>
+        <div class="small-6 columns">
+            <h1 class="text-center">MONSTER</h1>
+            <div class="healthbar">
+                <div class="healthbar text-center" 
+                    style="background-color: green; margin: 0; color: white;"
+                    v-bind:style="{width: monsterHealth + '%'}">
+                    {{ monsterHealth }}
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="row controls">
+        <div class="small-12 columns">
+            <button v-if="!gameRunning" id="start-game" v-on:click="startGame">START NEW GAME</button>
+        </div>
+    </section>
+    <section v-if="gameRunning" class="row controls">
+        <div class="small-12 columns">
+            <button id="attack" v-on:click="attackButton" >ATTACK</button>
+            <button id="special-attack" v-on:click="specialAttack">SPECIAL ATTACK</button>
+            <button id="heal" v-on:click="heal">HEAL</button>
+            <button id="give-up" v-on:click="giveUp">GIVE UP</button>
+        </div>
+    </section>
+    <section class="row log">
+        <div class="small-12 columns" v-bind:style="{overflow: 'scroll', maxHeight: '500px'}">
+            <ul>
+                <li v-for="activity in log">
+                    <div v-if="activity.includes('Player')" :style="playerStyle">{{activity}}</div>
+                    <div v-else :style="monStyle">{{activity}}</div>
+                </li>
+            </ul>
+        </div>
+    </section>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>
