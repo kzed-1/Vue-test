@@ -43,7 +43,7 @@
             <button id="give-up" v-on:click="giveUp">GIVE UP</button>
         </div>
     </section>
-    <section class="row log">
+    <section v-if="log.length > 0" class="row log">
         <div class="small-12 columns" v-bind:style="{overflow: 'scroll', maxHeight: '500px'}">
             <ul>
                 <li v-for="activity in log">
