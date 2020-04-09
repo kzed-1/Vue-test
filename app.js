@@ -29,9 +29,19 @@ new Vue({
             }
         },
         attackButton: function () {
-            this.playerHealth -= this.attackByMonster();
-            this.monsterHealth -= this.attackByPlayer();
-
+            if (this.playerHealth <= 0 ) {
+                this.playerHealth = 0;
+                return
+            } else {
+                this.playerHealth -= this.attackByMonster();
+            }
+            
+            if (this.monsterHealth <= 0) {
+                this.monsterHealth = 0;
+                return
+            } else {
+                this.monsterHealth -= this.attackByPlayer();
+            }
         },
         specialAttack: function () {
             this.monsterHealth -= this.attackByPlayer('special');
@@ -51,7 +61,7 @@ new Vue({
         giveUp: function () {
             const response = confirm('Are you sure you want to give up?');
             if (response === true) {
-                this.startOver();
+                this.startGame();
             }
         }
     },
@@ -60,14 +70,23 @@ new Vue({
             if (this.monsterHealth <= 0) {
                 this.monsterHealth = 0
                 this.gameRunning = false
-                alert('You win')
+
+                const response = confirm('You won! Play again?');
+                if (response === true) {
+                    this.startGame();
+                }
+                return;
             }
         },
         playerHealth: function () {
             if (this.playerHealth <= 0) {
                 this.playerHealth = 0
                 this.gameRunning = false
-                alert('You lose, try again')
+                const response = confirm('You lost! Play again?');
+                if (response === true) {
+                    this.startGame();
+                }
+                return;
             }
         }
     }
